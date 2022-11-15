@@ -1,6 +1,6 @@
+//importing libraries
 import React from "react";
 
-//importing components
 
 //class based component
 class SearchBar extends React.Component {
@@ -14,6 +14,8 @@ class SearchBar extends React.Component {
   // handler fuction to update form when user clicks enter
   onFormSubmit = (event) => {
     event.preventDefault();
+
+    this.props.onFormSubmit(this.state.searchValue);
   };
 
   render() {
