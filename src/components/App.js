@@ -1,58 +1,43 @@
 //importing libraries
-import React from "react";
+import React, { useState, useEffect } from "react";
 //importing components
 import SearchBar from "./SearchBar";
 import VideoList from "./VideoList";
 import VideoDetail from "./VideoDetail";
 
-//importing APIs
-import youtube from "../APIs/youtube";
+//importing custom Hooks
+import useVideos from "../hooks/useVideos";
 
-//class based component
-class App extends React.Component {
-  state = { videos: [], selectedVideo: null };
+//functional component
 
-componentDidMount(){
-    this.onSearchSubmit('learning react');
-}
+const App = () => {
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  //using custom hook
+  const [videos, search] = useVideos("Learn React");
 
-  //method to get callback from child searchbar and obtain searchvalue
-  onSearchSubmit = async (value) => {
-    //collecting the response data using async await on axios get request
-    const response = await youtube.get("search", { params: { q: value } });
-    //updating state with the new array of videos
-    this.setState({
-      videos: response.data.items,
-      selectedVideo: response.data.items[0],
-    });
-  };
+  useEffect(() => {
+    setSelectedVideo(videos[0]);
+  }, [videos]);
 
-  //Method to get selected video by passing it as callback to child components
-  onVideoSelect = (video) => {
-    this.setState({ selectedVideo: video });
-  };
-  //---------------------------RENDER METHOD--------------------------------
-  render() {
-    return (
-      <React.StrictMode>
-        <div className="ui container">
-          <SearchBar onFormSubmit={this.onSearchSubmit} />
-          <div className="ui grid">
-            <div className="ui row">
-              <div className="eleven wide column">
-                <VideoDetail video={this.state.selectedVideo} />
-              </div>
-              <div className="five wide column">
-                <VideoList
-                  onVideoSelect={this.onVideoSelect}
-                  videos={this.state.videos}
-                />
-              </div>
+  //-------------------Return Statement---------------------------
+  return (
+    <React.StrictMode>
+      <div className="ui container">
+        <SearchBar onFormSubmit={search} />
+        <div className="ui grid">
+          <div className="ui row">
+            <div className="eleven wide column">
+              <VideoDetail video={selectedVideo} />
+            </div>
+            <div className="five wide column">
+              {/*Method to get selected video by passing it as callback to child components */}
+              <VideoList onVideoSelect={setSelectedVideo} videos={videos} />
             </div>
           </div>
         </div>
-      </React.StrictMode>
-    );
-  }
-}
+      </div>
+    </React.StrictMode>
+  );
+};
+
 export default App;
